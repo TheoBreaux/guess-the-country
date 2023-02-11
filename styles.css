@@ -1,0 +1,108 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box
+}
+
+@font-face {
+    font-family: GvTime;
+    src: url("Fonts/GvTimeRegular-4B1zD.ttf");
+    font-weight: bold;
+}
+
+body {
+    text-align: center;
+    border: 2px solid black;
+    padding: 5px;
+    min-height: 100vh;
+    margin: 10px;
+}
+
+h1 {
+    font-family: GvTime;
+    font-size: 80px;
+    margin-bottom: 0;
+    -webkit-text-stroke: .5px #04AA6D;
+}
+
+#score-line {
+    margin-bottom: 25px;
+    font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif
+}
+
+#correct-score,
+#incorrect-score {
+    font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+}
+
+#flag-image {
+    display: none;
+    border: 2px solid red;
+    margin: auto;
+    width: 300px;
+    height: 200px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+
+#new-flag-btn,
+#submit-answer-btn {
+    background-color: #04AA6D;
+    color: white;
+    font-size: 16px;
+    display: block;
+    margin: 0 auto;
+    padding: 10px 30px;
+    border-radius: 5px;
+    font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+    margin-bottom: 25px;
+    margin-top: 25px;
+    border: none;
+}
+
+#country-flag-select {
+    font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+    padding: 5px;
+    /* display: block;
+    margin: 0 auto;
+    margin-bottom: 25px; */
+}
+
+p {
+    font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+    margin-bottom: 25px;
+}
+
+@media screen and (max-width: 550px) {
+    h1 {
+        font-size: 75px;
+    }
+}
+
+@media screen and (max-width: 515px) {
+    h1 {
+        font-size: 50px;
+    }
+}
+
+@media screen and (max-width: 360px) {
+    h1 {
+        font-size: 40px;
+    }
+
+    #country-flag-select {
+        width: 50%;
+    }
+
+    #flag-image {
+        width: 200px;
+        height: 150px;
+    }
+
+    #new-flag-btn,
+    #submit-answer-btn {
+        width: 50%;
+        height: 50%;
+    }
+}
