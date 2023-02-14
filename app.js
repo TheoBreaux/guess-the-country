@@ -14,6 +14,8 @@ async function main() {
     const countryFlagSelect = document.getElementById("country-flag-select");
     //grab submit answer button
     const submitAnswerBtn = document.getElementById("submit-answer-btn");
+    //grab reset game button
+    const resetGameBtn = document.getElementById("reset-game-btn");
     //grab correct answer output
     const correctAnswerOutput = document.getElementById("correct-answer-output");
     //declare return API data as local variable for future access
@@ -39,24 +41,36 @@ async function main() {
     newFlagBtn.addEventListener("click", async function () {
         // re-enable submit answer button
         submitAnswerBtn.disabled = false;
+        submitAnswerBtn.style.opacity = "1";
+        submitAnswerBtn.style.cursor = "pointer";
         //generate a random number between 0 and 249
         const random = Math.floor(Math.random() * 250);
         //generate a random country to pass into function later
         randomCountry = data[random];
         //generate a random flag
         const randomFlag = data[random].flags.png;
+        
         //once new flag button is clicked, display new flag
         flagImage.style.display = "block";
         //update t0 new flag
         flagImage.src = randomFlag;
+        newFlagBtn.disabled = true;
+        newFlagBtn.style.opacity = "0.5";
+        newFlagBtn.style.cursor = "not-allowed";
+        //remove previouis answer
+        correctAnswerOutput.innerHTML = "";
     })
 
-    //add submit event listener to submit anser button
-    submitAnswerBtn.addEventListener("click", checkSubmission);
-    //create function to check if answer is corect
-    function checkSubmission() {
+    //add event listener to submit answer button
+    submitAnswerBtn.addEventListener("click", () => {
         checkAnswer(randomCountry);
-    }
+    });
+
+    //add event listener to reset button
+    resetGameBtn.addEventListener("click", () => {
+        correctScore.innerText = 0, incorrectScore.innerText = 0;
+        correctAnswerOutput.innerHTML = "";
+    });
 
     function checkAnswer(randomCountry) {
         const displayFlagCountry = randomCountry.name.common; //actual flag being displayed
@@ -66,17 +80,37 @@ async function main() {
             //increment correctScoreTotal by 1 point
             correctScoreTotal++;
             correctScore.innerText = correctScoreTotal;
-            correctAnswerOutput.innerHTML = `Great job! You are correct! This flag does belong to <p style="font-size:60px; font-family:GvTime">${displayFlagCountry}!`;
+            correctAnswerOutput.innerHTML = `Great job! You are correct! This flag does belong to <p style="font-size:60px; font-family:GvTime">${displayFlagCountry}!<img id="tiny-flag" src="${randomCountry.flags.png}">`;
             submitAnswerBtn.disabled = true;
+            submitAnswerBtn.style.opacity = "0.5";
+            submitAnswerBtn.style.cursor = "not-allowed";
+            newFlagBtn.disabled = false;
+            newFlagBtn.style.opacity = "1";
+            newFlagBtn.style.cursor = "pointer";
         } else {
-            console.log(incorrectScoreTotal)
             incorrectScoreTotal++;
-            console.log(incorrectScoreTotal)
             incorrectScore.innerText = incorrectScoreTotal;
-            correctAnswerOutput.innerHTML = `I'm sorry, but the correct answer is <p style="font-size:60px; font-family:GvTime">${displayFlagCountry}!`;
+            correctAnswerOutput.innerHTML = `I'm sorry, but the correct answer is <p style="font-size:60px; font-family:GvTime">${displayFlagCountry}! <img id="tiny-flag" src="${randomCountry.flags.png}">`;
             submitAnswerBtn.disabled = true;
+            submitAnswerBtn.style.opacity = "0.6";
+            submitAnswerBtn.style.cursor = "not-allowed";
+            newFlagBtn.disabled = false;
+            newFlagBtn.style.opacity = "1";
+            newFlagBtn.style.cursor = "pointer";
         }
     }
 }
 main();
-//add game reset button
+
+
+//add game reset button DONE
+//no new flag button until answer submitted, gray out disabled buttons DONE
+
+
+
+//don't allow the same country to be seen more than once
+    // once country has come up as flag, remove country data object from array 
+//be able to click correct and incorrect and see which countrues you answered for each, disable select
+    //create arrays holding incorrect flag names and correct flag names 
+//practice incorrect flags
+

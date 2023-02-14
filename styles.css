@@ -47,7 +47,8 @@ h1 {
 }
 
 #new-flag-btn,
-#submit-answer-btn {
+#submit-answer-btn,
+#reset-game-btn {
     background-color: #04AA6D;
     color: white;
     font-size: 16px;
@@ -59,6 +60,12 @@ h1 {
     margin-bottom: 25px;
     margin-top: 25px;
     border: none;
+    cursor: pointer;
+}
+
+#reset-game-btn {
+    margin-top: 20px;
+    background-color: red;
 }
 
 #country-flag-select {
@@ -74,6 +81,11 @@ h1 {
     font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
     font-size: 16px;
     margin-bottom: 25px;
+}
+
+#tiny-flag {
+    height: 40px;
+    width: 60px;
 }
 
 @media screen and (max-width: 550px) {
