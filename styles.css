@@ -32,19 +32,19 @@ h1 {
 
 #correct-score,
 #incorrect-score {
-    font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+    font-family: GvTime;
+    font-size: 25px;
 }
 
 #flag-image {
     display: none;
-    border: 2px solid red;
+    border: 1px solid black;
     margin: auto;
     width: 300px;
     height: 200px;
     margin-bottom: 20px;
     margin-top: 20px;
 }
-
 
 #new-flag-btn,
 #submit-answer-btn {
@@ -64,13 +64,15 @@ h1 {
 #country-flag-select {
     font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
     padding: 5px;
+    width: 300px;
     /* display: block;
     margin: 0 auto;
     margin-bottom: 25px; */
 }
 
-p {
+#correct-answer-output {
     font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+    font-size: 16px;
     margin-bottom: 25px;
 }
 
