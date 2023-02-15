@@ -124,10 +124,10 @@ async function main() {
         }
     }
 
-    //add event listener to flag practice  button
+    //add event listener to flag practice button
     flagPracticeBtn.addEventListener("click", newPracticeFlagGenerator);
 
-    //create remove all country options from previous game
+    //create function that removes all previous country options from previous game
     function removeAllOptions(selectBox) {
         while (selectBox.options.length > 0) {
             selectBox.remove(0);
@@ -171,16 +171,19 @@ async function main() {
     }
 
     //add new event listener to newFlag button for wrong flag practice round
-    newFlagBtn.addEventListener("click", wrongFlagPractice)
+    newFlagBtn.addEventListener("click", wrongFlagPractice);
 
 
     //STILL TRYING TO FIGURE WHY THE ARRAY OF WRONG ANSWERS IS NOT WORKING 
     function wrongFlagPractice() {
+        console.log(flagsAnsweredIncorrectly)
+
         //generate a random number between 0 and number of flagsAnsweredIncorrectly
         const random = Math.floor(Math.random() * flagsAnsweredIncorrectly.length);
 
         //generate a random country to pass into function later
         const randomPracticeCountry = flagsAnsweredIncorrectly[random];
+        console.log(randomPracticeCountry)
         // //generate a random flag
         // const randomFlag = data[random].flags.png;
 
