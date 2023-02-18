@@ -1,8 +1,7 @@
+//wrapping entire program in main async function 
 async function main() {
     //grab gameHeading
     const gameHeading = document.getElementById("game-heading");
-    //grab flagPractice Button
-    const flagPracticeBtn = document.getElementById("flag-practice-btn");
     //grab the score nodes then convert from strings to numbers
     const correctScore = document.getElementById("correct-score");
     let correctScoreTotal = Number(correctScore.innerText);
@@ -20,22 +19,29 @@ async function main() {
     const submitAnswerBtn = document.getElementById("submit-answer-btn");
     //grab reset game button
     const resetGameBtn = document.getElementById("reset-game-btn");
+    //grab flagPractice Button
+    const practiceIncorrectFlagsBtn = document.getElementById("practice-incorrect-flags-btn");
     //grab correct answer output
     const correctAnswerOutput = document.getElementById("correct-answer-output");
-    //declare return API data as local variable for future access
+    //declare return API data as global variable for future access
     let data;
     //declare random country variable to be updated later
     let randomCountry;
+
+    let randomWrongCountry;
+
     //initialize empty array to store corrrect answers
     let flagsAnsweredCorrectly = [];
-    //initialize empty array to store corrrect answers
+    //initialize empty array to store incorrrect answers
     let flagsAnsweredIncorrectly = [];
 
     //grab data from API call 
     const countryRequest = await fetch("https://restcountries.com/v3.1/all");
     //parse return JSON values
     data = await countryRequest.json();
+
     let countryDataArray = data.map((countryObj) => countryObj.name.common).sort();
+
     //loop through countryDataArray to create all country option elements in select
     for (let i = 0; i < countryDataArray.length; i++) {
         const currCountry = countryDataArray[i];
@@ -45,54 +51,100 @@ async function main() {
         countryFlagSelect.append(newOption);
     }
 
-    //generate API request for new flag image
-    newFlagBtn.addEventListener("click", newFlagGenerator);
+    //disable submit and reset game button upon game load
+    function enableNewFlagBtn() {
+        newFlagBtn.disabled = false;
+        newFlagBtn.style.opacity = "1";
+        newFlagBtn.style.cursor = "pointer";
+    }
 
-    async function newFlagGenerator() {
-        // re-enable submit answer button
-        submitAnswerBtn.disabled = false;
-        submitAnswerBtn.style.opacity = "1";
-        submitAnswerBtn.style.cursor = "pointer";
-        //generate a random number between 0 and 249
-        const random = Math.floor(Math.random() * 250);
-        //generate a random country to pass into function later
-        randomCountry = data[random];
-        //generate a random flag
-        const randomFlag = data[random].flags.png;
-
-        //once new flag button is clicked, display new flag
-        flagImage.style.display = "block";
-        //update t0 new flag
-        flagImage.src = randomFlag;
+    function disableNewFlagBtn() {
         newFlagBtn.disabled = true;
         newFlagBtn.style.opacity = "0.5";
         newFlagBtn.style.cursor = "not-allowed";
-        //remove previouis answer
+    }
+
+    function enableSubmitBtn() {
+        submitAnswerBtn.disabled = false;
+        submitAnswerBtn.style.opacity = "1";
+        submitAnswerBtn.style.cursor = "pointer";
+    }
+
+    function disableSubmitBtn() {
+        submitAnswerBtn.disabled = true;
+        submitAnswerBtn.style.opacity = "0.5";
+        submitAnswerBtn.style.cursor = "not-allowed";
+    }
+
+    function enableResetGameBtn() {
+        resetGameBtn.disabled = false;
+        resetGameBtn.style.opacity = "1";
+        resetGameBtn.style.cursor = "pointer";
+    }
+
+    function disableResetGameBtn() {
+        resetGameBtn.disabled = true;
+        resetGameBtn.style.opacity = "0.5";
+        resetGameBtn.style.cursor = "not-allowed";
+    }
+
+    function resetScore() {
+        incorrectScoreTotal = 0;
+        correctScoreTotal = 0;
+        correctScore.innerText = correctScoreTotal;
+        incorrectScore.innerText = incorrectScoreTotal;
+    }
+
+    //generate API request for new flag image
+    newFlagBtn.addEventListener("click", newFlag);
+
+    countryFlagSelect.value = "";
+
+    function newFlag() {
+        //generate a random number between 0 and 249
+        const random = Math.floor(Math.random() * 250);
+        //update random Country variable to generate random country
+        randomCountry = data[random];
+        //generate a random flag
+        const randomFlag = data[random].flags.png;
+        //once new flag button is clicked, display new flag
+        flagImage.style.display = "block";
+        flagImage.src = randomFlag;
+        //remove previous answer
         correctAnswerOutput.innerHTML = "";
         //reset select options
         countryFlagSelect.value = "";
+        //enable submit answer button
+        enableSubmitBtn();
+        //disable newFlag button until submission is made for current flag 
+        disableNewFlagBtn();
+        //enable game reset button
+        enableResetGameBtn();
+    };
+
+    //define submit annswer function
+    function submitAnswer() {
+        checkAnswer(randomCountry);
     };
 
     //add event listener to submit answer button
-    submitAnswerBtn.addEventListener("click", () => {
-        checkAnswer(randomCountry);
-    });
+    submitAnswerBtn.addEventListener("click", submitAnswer);
 
     function checkAnswer(randomCountry) {
-        const displayFlagCountry = randomCountry.name.common; //actual flag being displayed
-        const playerSelectedCountry = countryFlagSelect.value; //player selected country
+        //actual flag being displayed
+        const displayFlagCountry = randomCountry.name.common;
+        //player selected country
+        const playerSelectedCountry = countryFlagSelect.value;
 
         if (displayFlagCountry === playerSelectedCountry) {
             //increment correctScoreTotal by 1 point
             correctScoreTotal++;
             correctScore.innerText = correctScoreTotal;
             correctAnswerOutput.innerHTML = `Great job! You are correct! This flag does belong to <p style="font-size:60px; font-family:GvTime">${displayFlagCountry}!<img id="tiny-flag" src="${randomCountry.flags.png}">`;
-            submitAnswerBtn.disabled = true;
-            submitAnswerBtn.style.opacity = "0.5";
-            submitAnswerBtn.style.cursor = "not-allowed";
-            newFlagBtn.disabled = false;
-            newFlagBtn.style.opacity = "1";
-            newFlagBtn.style.cursor = "pointer";
+            //disable submit button
+            disableSubmitBtn();
+            //enable new flag button to generate a new flag
+            enableNewFlagBtn();
             //push name of flag into correct answers array
             flagsAnsweredCorrectly.push(displayFlagCountry);
             //remove flag from countryDataArray so it does not come up again
@@ -101,200 +153,167 @@ async function main() {
             incorrectScoreTotal++;
             incorrectScore.innerText = incorrectScoreTotal;
             correctAnswerOutput.innerHTML = `I'm sorry, but the correct answer is <p style="font-size:60px; font-family:GvTime">${displayFlagCountry}! <img id="tiny-flag" src="${randomCountry.flags.png}">`;
-            submitAnswerBtn.disabled = true;
-            submitAnswerBtn.style.opacity = "0.6";
-            submitAnswerBtn.style.cursor = "not-allowed";
-            newFlagBtn.disabled = false;
-            newFlagBtn.style.opacity = "1";
-            newFlagBtn.style.cursor = "pointer";
+            //disable submit button
+            disableSubmitBtn();
+            //enable new flag button for next flag to guess
+            enableNewFlagBtn();
             //push name of flag into incorrect answers array
             flagsAnsweredIncorrectly.push(displayFlagCountry);
             //remove flag from countryDataArray so it does not come up again
             countryDataArray.splice(countryDataArray.indexOf(displayFlagCountry), 1);
         }
 
-        if (countryDataArray.length === 247) {
+        // after all flags have been guessed in the countryDataArray
+        if (countryDataArray.length === 245) {
             gameHeading.innerText = "Game complete! Please reset the game or practice your missed guesses below!";
             gameHeading.style.fontSize = "50px";
             gameHeading.style.lineHeight = "1";
-            newFlagBtn.disabled = true;
-            newFlagBtn.style.opacity = "0.5";
-            newFlagBtn.style.cursor = "not-allowed";
-            flagPracticeBtn.style.display = "block";
+            disableNewFlagBtn();
+            practiceIncorrectFlagsBtn.style.display = "block";
+            //remove previous eventlistener from newFlag button
+            newFlagBtn.removeEventListener("click", newFlag);
+            //remove the event listener for checkAnswer 
+            submitAnswerBtn.removeEventListener("click", submitAnswer);
         }
     }
 
-    //add event listener to flag practice button
-    flagPracticeBtn.addEventListener("click", newPracticeFlagGenerator);
+    function resetGame() {
+        gameHeading.innerText = "Guess the country!";
+        gameHeading.style.fontSize = "70px";
+        gameHeading.style.color = "-webkit-text-stroke: .5px #04AA6D";
+        //reset score
+        resetScore()
+        correctAnswerOutput.innerHTML = "";
+        flagImage.style.display = "none";
+        //reset select options
+        countryFlagSelect.value = "";
+        practiceIncorrectFlagsBtn.style.display = "none";
+        //enable newflag button
+        enableNewFlagBtn()
+        //disable submit answer button
+        disableSubmitBtn()
+        //confirms data in countryDataArray is reset for fresh game with all flags
+        console.log(data.length)
+        console.log(data)
+    }
 
-    //create function that removes all previous country options from previous game
+    //add event listener to reset button to reset game
+    resetGameBtn.addEventListener("click", resetGame);
+
+    //add event listener to flag practice button
+    practiceIncorrectFlagsBtn.addEventListener("click", wrongFlagsGenerator);
+
+    //create function that removes all previous country options from previous game select
     function removeAllOptions(selectBox) {
         while (selectBox.options.length > 0) {
             selectBox.remove(0);
         }
     }
 
-    function newPracticeFlagGenerator() {
+    function testMeAgain() {
+        //enable new flag from incorrect array
+        enableNewFlagBtn()
+        //disable submit buttons
+        disableSubmitBtn()
+        flagImage.style.display = "none";
+        practiceIncorrectFlagsBtn.style.display = "none";
+        //remove previous answer
+        correctAnswerOutput.innerHTML = "";
+        //reset select options
+        countryFlagSelect.value = "";
+    }
+
+    function wrongFlagsGenerator() {
+        gameHeading.innerHTML = `Incorrect Flag <br> Practice Round`;
+        gameHeading.style.fontSize = "60px";
+        testMeAgain();
+        //reset score
+        resetScore();
+        console.log(flagsAnsweredIncorrectly)
+        //add new event listener to newFlag button for wrong flag practice round
+        newFlagBtn.addEventListener("click", practiceIncorrectFlags);
         //remove previous options from select
         removeAllOptions(countryFlagSelect);
+        //sort flags options alphabetically
         flagsAnsweredIncorrectly.sort();
+        console.log(flagsAnsweredIncorrectly)
 
         //loop through flagsAnsweredIncorrectly to create all country option elements in select
         for (let i = 0; i < flagsAnsweredIncorrectly.length; i++) {
-            const currCountry = flagsAnsweredIncorrectly[i];
-            const newOption = document.createElement("option");
-            newOption.textContent = currCountry;
-            newOption.value = currCountry;
-            countryFlagSelect.append(newOption);
+            const currPracticeCountry = flagsAnsweredIncorrectly[i];
+            const newPracticeOption = document.createElement("option");
+            newPracticeOption.textContent = currPracticeCountry;
+            newPracticeOption.value = currPracticeCountry;
+            countryFlagSelect.append(newPracticeOption);
+        }
+    }
+
+    //begin practice of incorrect flags
+    function practiceIncorrectFlags() {
+        countryFlagSelect.value = "";
+        //add event listener to submit button
+        submitAnswerBtn.addEventListener("click", submitPracticeAnswer);
+        //enable submit button
+        enableSubmitBtn();
+        console.log("HERE WE GO!")
+        //generate a random number between 0 and length of wrong flags array
+        const random = Math.floor(Math.random() * flagsAnsweredIncorrectly.length);
+        console.log(random)
+        //generate a random country from the wrong country array
+        randomWrongCountry = flagsAnsweredIncorrectly[random];
+        console.log(randomWrongCountry)
+
+        //loop through data array to grab flag urls to generate random wrong flags
+        for (let i = 0; i < data.length; i++) {
+            //update random Country variable to generate random country
+            if (data[i].name.common === randomWrongCountry) {
+                const wrongRandomFlag = data[i].flags.png;
+                //display new flag
+                flagImage.style.display = "block";
+                flagImage.src = wrongRandomFlag;
+            }
         }
 
-        gameHeading.innerHTML = `Incorrect Flag <br> Practice Round`;
-        gameHeading.style.fontSize = "60px";
-        correctScore.innerText = 0, incorrectScore.innerText = 0;
-        newFlagBtn.disabled = false;
-        newFlagBtn.style.cursor = "pointer";
-        newFlagBtn.style.opacity = "1";
-        // enable all buttons
-        submitAnswerBtn.disabled = false;
-        submitAnswerBtn.style.opacity = "1";
-        submitAnswerBtn.style.cursor = "pointer";
-        flagImage.style.display = "none";
-        flagPracticeBtn.style.display = "none";
-        //remove previouis answer
-        correctAnswerOutput.innerHTML = "";
-        //reset select options
-        countryFlagSelect.value = "";
+        function submitPracticeAnswer() {
+            console.log("Hey Theo", flagsAnsweredIncorrectly)
 
-        //remove previous eventlistener from newFlag button
-        newFlagBtn.removeEventListener("click", newFlagGenerator);
-        console.log(flagsAnsweredIncorrectly)
+            if (randomWrongCountry === countryFlagSelect.value) {
+                //increment correctScoreTotal by 1 point
+                correctScoreTotal++;
+                correctScore.innerText = correctScoreTotal;
+                correctAnswerOutput.style.display = "block";
+                correctAnswerOutput.innerHTML = `Great job! You are correct! This flag does belong to <p style="font-size:60px; font-family:GvTime">${randomWrongCountry}!`;
+                //enable new flag button to generate a new flag
+                enableNewFlagBtn();
+                //remove flag from array so it does not come up again
+                flagsAnsweredIncorrectly.splice(flagsAnsweredIncorrectly.indexOf(randomWrongCountry), 1);
+                console.log(flagsAnsweredIncorrectly)
+            } else {
+                incorrectScoreTotal++;
+                incorrectScore.innerText = incorrectScoreTotal;
+                correctAnswerOutput.innerHTML = `I'm sorry, but the correct answer is <p style="font-size:60px; font-family:GvTime">${randomWrongCountry}!`;
+                //enable new flag button for next flag to guess
+                enableNewFlagBtn()
+                //remove flag from array so it does not come up again
+                flagsAnsweredIncorrectly.splice(flagsAnsweredIncorrectly.indexOf(randomWrongCountry), 1);
+                console.log(flagsAnsweredIncorrectly)
+            }
+
+            //remove event listener to submit button
+            submitAnswerBtn.removeEventListener("click", submitPracticeAnswer);
+
+            if (flagsAnsweredIncorrectly.length === 0) {
+                gameHeading.innerText = "Game over! Keep practicing!"
+                gameHeading.style.fontSize = "60px";
+                gameHeading.style.lineHeight = "1";
+                gameHeading.style.color = "red";
+                disableNewFlagBtn();
+                resetGameBtn.style.display = "none";
+                countryFlagSelect.style.display = "none";
+                submitAnswerBtn.style.display = "none";
+            }
+        }
     }
-
-    //add new event listener to newFlag button for wrong flag practice round
-    newFlagBtn.addEventListener("click", wrongFlagPractice);
-
-
-    //STILL TRYING TO FIGURE WHY THE ARRAY OF WRONG ANSWERS IS NOT WORKING 
-    function wrongFlagPractice() {
-        console.log(flagsAnsweredIncorrectly)
-
-        //generate a random number between 0 and number of flagsAnsweredIncorrectly
-        const random = Math.floor(Math.random() * flagsAnsweredIncorrectly.length);
-
-        //generate a random country to pass into function later
-        const randomPracticeCountry = flagsAnsweredIncorrectly[random];
-        console.log(randomPracticeCountry)
-        // //generate a random flag
-        // const randomFlag = data[random].flags.png;
-
-        // //once new flag button is clicked, display new flag
-        // flagImage.style.display = "block";
-        // //update t0 new flag
-        // flagImage.src = randomFlag;
-        // newFlagBtn.disabled = true;
-        // newFlagBtn.style.opacity = "0.5";
-        // newFlagBtn.style.cursor = "not-allowed";
-        // //remove previouis answer
-        // correctAnswerOutput.innerHTML = "";
-        // //reset select options
-        // countryFlagSelect.value = "";
-    }
-
-
-
-
-
-    //add event listener to reset button to reset game
-    resetGameBtn.addEventListener("click", () => {
-        gameHeading.innerText = "Guess the country!";
-        gameHeading.style.fontSize = "80px";
-        incorrectScoreTotal = 0;
-        correctScoreTotal = 0;
-        correctScore.innerText = correctScoreTotal;
-        incorrectScore.innerText = incorrectScoreTotal;
-        correctAnswerOutput.innerHTML = "";
-        flagImage.style.display = "none";
-        //reset select options
-        countryFlagSelect.value = "";
-        flagPracticeBtn.style.display = "none";
-        newFlagBtn.disabled = false;
-        newFlagBtn.style.opacity = "1";
-        newFlagBtn.style.cursor = "pointer";
-        submitAnswerBtn.disabled = false;
-        submitAnswerBtn.style.opacity = "1";
-        submitAnswerBtn.style.cursor = "pointer";
-        console.log(data.length)
-        console.log(data)
-    });
-
-    // function repopulateGame() {
-    //     console.log(flagsAnsweredIncorrectly)
-    //     console.log(flagsAnsweredIncorrectly.length)
-
-    //     //generate a random number between 0 and 249
-    //     const random = Math.floor(Math.random() * flagsAnsweredIncorrectly.length);
-    //     //generate a random country to pass into function later
-    //     const randomCountry = flagsAnsweredIncorrectly[random];
-
-
-
-
-
-    //     //generate a random flag
-    //     const randomFlag = data[random].flags.png;
-
-    //     //once new flag button is clicked, display new flag
-    //     flagImage.style.display = "block";
-    //     //update t0 new flag
-    //     flagImage.src = randomFlag;
-    //     newFlagBtn.disabled = true;
-    //     newFlagBtn.style.opacity = "0.5";
-    //     newFlagBtn.style.cursor = "not-allowed";
-    //     //remove previouis answer
-    //     correctAnswerOutput.innerHTML = "";
-    //     //reset select options
-    //     countryFlagSelect.value = "";
-
-
-    // }
-
-
-
-    //loop through flagsincorrect array and match country with flag url.
-    // for (let i = 0; i < data.length; i++) {
-    //     if (flagsAnsweredIncorrectly.includes(data[i].name.common)) {
-    //         const randomFlag = data[i].flags.png;
-    //         console.log(randomFlag)
-    //         //update to new flag
-    //         flagImage.src = randomFlag;
-    //     }
-
-    // }
-
-    //     correctAnswerOutput.innerHTML = "";
-    //     flagPracticeBtn.style.display = "none";
-    //     flagImage.style.display = "none";
-    //     resetGameBtn.style.display = "none";
-    //     countryFlagSelect.value = "";
-    //     submitAnswerBtn.disabled = false;
-    //     submitAnswerBtn.style.cursor = "pointer";
-    //     submitAnswerBtn.style.opacity = "1";
-
-
-
-    //     console.log(flagsAnsweredIncorrectly)
-    //     for (let i = 0; i < flagsAnsweredIncorrectly.length; i++) {
-    //         const currCountry = flagsAnsweredIncorrectly[i];
-    //         console.log(currCountry)
-    //         const newOption = document.createElement("option");
-    //         newOption.textContent = currCountry;
-    //         newOption.value = currCountry;
-    //         countryFlagSelect.append(newOption);
-    //     }
-
-
-
-
 }
 
 main();
