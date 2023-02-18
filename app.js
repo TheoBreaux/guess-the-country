@@ -98,6 +98,11 @@ async function main() {
     //generate API request for new flag image
     newFlagBtn.addEventListener("click", newFlag);
 
+    //disable submit button
+    disableSubmitBtn();
+    // disable reset button
+    disableResetGameBtn();
+    //reset flag select
     countryFlagSelect.value = "";
 
     function newFlag() {
@@ -131,6 +136,7 @@ async function main() {
     submitAnswerBtn.addEventListener("click", submitAnswer);
 
     function checkAnswer(randomCountry) {
+        console.log(countryDataArray)
         //actual flag being displayed
         const displayFlagCountry = randomCountry.name.common;
         //player selected country
@@ -193,7 +199,10 @@ async function main() {
         //disable submit answer button
         disableSubmitBtn()
         //confirms data in countryDataArray is reset for fresh game with all flags
+        // reset coutry data array to original data array
+        countryDataArray = data;
         console.log(data.length)
+        console.log(countryDataArray.length)
         console.log(data)
     }
 
@@ -224,6 +233,7 @@ async function main() {
     }
 
     function wrongFlagsGenerator() {
+        countryFlagSelect.value = "";
         gameHeading.innerHTML = `Incorrect Flag <br> Practice Round`;
         gameHeading.style.fontSize = "60px";
         testMeAgain();
@@ -255,10 +265,8 @@ async function main() {
         submitAnswerBtn.addEventListener("click", submitPracticeAnswer);
         //enable submit button
         enableSubmitBtn();
-        console.log("HERE WE GO!")
         //generate a random number between 0 and length of wrong flags array
         const random = Math.floor(Math.random() * flagsAnsweredIncorrectly.length);
-        console.log(random)
         //generate a random country from the wrong country array
         randomWrongCountry = flagsAnsweredIncorrectly[random];
         console.log(randomWrongCountry)
@@ -275,8 +283,6 @@ async function main() {
         }
 
         function submitPracticeAnswer() {
-            console.log("Hey Theo", flagsAnsweredIncorrectly)
-
             if (randomWrongCountry === countryFlagSelect.value) {
                 //increment correctScoreTotal by 1 point
                 correctScoreTotal++;
@@ -326,5 +332,4 @@ main();
     //create arrays holding incorrect flag names and correct flag names (DONE)
 
 
-//practice incorrect flags
-
+//practice incorrect flags (DONE)
